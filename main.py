@@ -88,54 +88,49 @@ class GameStatistic:
 
 
 class Game:
-      def __init__(self):
-            pass
+      def __init__(self, Ball, Level, GameStatistic):
+            self.clock = pygame.time.Clock()
+            pygame.init()
+            self.screen = pygame.display.set_mode((X, Y))
+            pygame.display.set_caption(GAME_NAME)
+            self.ball_list = [Ball(self.screen)]  # list of all balls on screen at the moment of game
+            self.level = Level(self.ball_list)
+            self.statistic = GameStatistic()
 
-      def start_game(self):
-           pass 
+      def check_events(self):
+            for event in pygame.event.get():
+                  if event.type == pygame.QUIT:
+                        sys.exit()
+                  if event.type == pygame.MOUSEBUTTONDOWN:
+                        mouse_pos = event.pos
+                        get_in = False  # if player not get in target: False, else: True
+                        for ball in self.ball_list:
+                              if ball.is_click_in_ball(mouse_pos):
+                                    self.ball_list.remove(ball)
+                                    difficult = self.level.get_difficult()
+                                    self.statistic.add_score(difficult)
+                                    get_in = True
+                                    break
+                        if not get_in:
+                              self.statistic.del_score()
 
 
-def check_events(ball_list: list, statistic, difficult):
-      for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                  sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                  mouse_pos = event.pos
-                  get_in = False  # if player not get in target: False, else: True
-                  for ball in ball_list:
-                        if ball.is_click_in_ball(mouse_pos):
-                              ball_list.remove(ball)
-                              statistic.add_score(difficult)
-                              get_in = True
-                              break
-                  if not get_in:
-                        statistic.del_score()
-                        
+      def draw(self):
+            self.screen.fill(SCREEN_COLOR)
+            for ball in self.ball_list:
+                  ball.draw()
+            pygame.display.flip()
 
 
-def draw(screen, ball_list: list):
-      screen.fill(SCREEN_COLOR)
-      for ball in ball_list:
-            ball.draw()
-      pygame.display.flip()
-      
-
-def main():
-      clock = pygame.time.Clock()
-      pygame.init()
-      screen = pygame.display.set_mode((X, Y))
-      pygame.display.set_caption(GAME_NAME)
-      ball_list = [Ball(screen)]  # list of all balls on screen at the moment of game
-      level = Level(ball_list)
-      statistic = GameStatistic()
-      while True:
-            clock.tick(FPS)
-            level.make_balls_less()
-            level.add_ball_to_game(screen)
-            difficult = level.get_difficult()
-            check_events(ball_list, statistic, difficult)
-            draw(screen, ball_list)
+      def main(self):
+            while True:
+                  self.clock.tick(FPS)
+                  self.level.make_balls_less()
+                  self.level.add_ball_to_game(self.screen)
+                  self.check_events()
+                  self.draw()
             
 
 if __name__ == '__main__':
-      main()
+      game = Game(Ball, Level, GameStatistic)
+      game.main()
