@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 import time
+from statistic import GameStatistic
 
 
 
@@ -64,26 +65,6 @@ class Level:
       def _del_unnecessary_balls(self, ball):
             if ball.is_need_del():
                   self.ball_list.remove(ball)
-
-class GameStatistic:
-      def __init__(self):
-            """ count score of player, killed ball and miss.
-                  write statistic to csv file and show diagrams"""
-            self.killed_ball = 0
-            self.miss = 0
-            self.scores = 0
-
-      def add_score(self, difficult):
-            self.killed_ball += 1
-            self.scores += 100 * difficult
-
-      def del_score(self):
-            self.miss += 1
-            if self.scores >= 100:
-                  self.scores -= 50
-
-      def show(self):
-            pass
 
 
 class MenuButton:
@@ -155,6 +136,7 @@ class Game:
             del self.ball_list
             del self.level
             self.status = 'menu'
+            self.statistic.write_statistic()
             self.statistic.__init__()
             
 
