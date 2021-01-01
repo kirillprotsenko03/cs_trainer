@@ -136,7 +136,7 @@ class Game:
             del self.ball_list
             del self.level
             self.status = 'menu'
-            self.statistic.write_statistic()
+            self.statistic.write_data()
             self.statistic.__init__()
             
 
